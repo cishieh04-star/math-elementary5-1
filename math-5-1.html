@@ -238,14 +238,14 @@ button{font:inherit;color:inherit;border:0;cursor:pointer;touch-action:manipulat
 .exppanel{width:min(100%,calc(var(--u)*34));height:100%;max-height:100%;gap:calc(var(--u)*.4);padding:calc(var(--u)*.6) calc(var(--u)*.7);overflow:hidden}
 .exhead{display:flex;align-items:center;gap:.5em;flex:none}
 .exhead .ttl{flex:1;font-size:calc(var(--u)*1.15);color:#2f6b4f}
-#exBody{flex:1 1 auto;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:.2em;position:relative}
+#exBody{flex:1 1 auto;min-height:0;overflow:hidden;display:block;padding:.2em;position:relative}
 #exQ{flex:none;background:#eef6ff;border:.12em solid #a5d8ff;border-radius:calc(var(--u)*.7);padding:.25em .6em;font-weight:900;font-size:calc(var(--u)*1.02);line-height:1.4;text-align:left}
 #exQ .ql{display:inline-block;background:#1971c2;color:#fff;border-radius:99px;padding:0 .6em;margin-right:.4em;font-size:.82em;vertical-align:.08em}
 #exQ .num{color:#c2410c}
 #exQ .qo{display:flex;flex-wrap:wrap;gap:.25em .6em;margin-top:.15em;font-size:.88em;color:#364fc7}
 #exQ .qo span{background:#fff;border-radius:.4em;padding:0 .4em}
 @media (max-height:600px),(min-aspect-ratio:13/10){#exQ{font-size:calc(var(--u)*.9);padding:.15em .6em}}
-#exIn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u)*.45);transform-origin:center center;transition:transform .3s;width:100%}
+#exIn{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u)*.45);transform-origin:center center;transition:transform .3s;width:100%}
 #exIn>.exhide{display:none!important}
 #exIn>.exnew{animation:popin .5s both}
 #exCap{flex:none;font-weight:900;font-size:calc(var(--u)*1.1);line-height:1.4;background:#fff8dc;border-radius:calc(var(--u)*.7);padding:.3em .6em;box-shadow:0 .15em 0 #e8cf7a;min-height:calc(var(--u)*3.2);overflow:hidden;display:flex;flex-direction:column;gap:.25em;justify-content:center}
@@ -739,12 +739,12 @@ function exStep(){
 // 只顯示講到的圖；放不下就把舊的收起來，再縮小到剛好放得下（不要出現捲軸）
 function exShow(i){const pnl=$('#exIn');if(!pnl)return;const kids=Array.prototype.slice.call(pnl.children);const first=kids.length?Math.min.apply(null,kids.map(k=>+k.getAttribute('data-s'))):0;const lim=Math.max(i,first);
   kids.forEach(k=>{const s=+k.getAttribute('data-s');const on=s<=lim&&!k._gone;if(on&&k.classList.contains('exhide')){k.classList.remove('exhide');k.classList.add('exnew')}else if(!on)k.classList.add('exhide')})}
-function exFit(){const box=$('#exBody'),pnl=$('#exIn');if(!box||!pnl)return;pnl.style.transform='none';
+function exFit(){const box=$('#exBody'),pnl=$('#exIn');if(!box||!pnl)return;pnl.style.transform='translateY(-50%)';
   const H=box.clientHeight-6,W=box.clientWidth-6;
   let vis=Array.prototype.slice.call(pnl.children).filter(k=>!k.classList.contains('exhide'));
   // 太多就收起最舊的（同一組的標題一起收）
   while(pnl.offsetHeight>H&&vis.length>1){const s0=vis[0].getAttribute('data-s');const grp=vis.filter(k=>k.getAttribute('data-s')===s0);if(grp.length===vis.length)break;grp.forEach(k=>{k._gone=1;k.classList.add('exhide')});vis=vis.filter(k=>!k.classList.contains('exhide'))}
-  const sc=Math.min(1,H/Math.max(1,pnl.offsetHeight),W/Math.max(1,pnl.scrollWidth));pnl.style.transform=sc<1?`scale(${sc.toFixed(3)})`:'none'}
+  const sc=Math.min(1,H/Math.max(1,pnl.offsetHeight),W/Math.max(1,pnl.scrollWidth));pnl.style.transform=sc<1?`translateY(-50%) scale(${sc.toFixed(3)})`:'translateY(-50%)'}
 window.addEventListener('resize',()=>{if($('#ovExp').classList.contains('on'))exFit()});
 function exEnd(){const R=EXR;if(!R)return;$('#exClose').classList.add('pulse');$('#exNext').disabled=true;$('#exNext').textContent='看完了'}
 function exTogglePause(){const R=EXR;if(!R||R.gen!==EXGEN)return;R.paused=!R.paused;$('#exPause').textContent=R.paused?'繼續':'暫停';
